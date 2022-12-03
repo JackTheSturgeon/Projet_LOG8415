@@ -39,16 +39,25 @@ if [ "$SecurityGroup" == "" ]; then
         sleep 10
     done
     SecurityGroup=$(aws ec2 create-security-group --description "tp2-group" --group-name tp2-group --output text)
-    # enable inbound ssh to debug and http for us to view the webapp
-    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 22   --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 80   --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 443  --cidr 0.0.0.0/0
+    # enable inbound ssh to debug and vnc
+    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 22 --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
+
     # for downloads, enable http/https outbound
-    aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 80   --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 443  --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
+#aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 443 --cidr 0.0.0.0/0
 fi
 
 # Launching MySQL instance
 t2Micro="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --user-data file://install_mysql.sh --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
 echo $t2Micro
 
+t2Master="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
+echo $t2Master
+t2Slaves="$(aws ec2 run-instances --image-id $ECSImageId --count 3 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
+echo $t2Slaves
+
+masterAddrList=$(aws ec2 describe-instances --instance-id $t2Master --query "Reservations[].Instances[].PublicIpAddress[]")
+slavesAddrList=$(aws ec2 describe-instances --instance-id $t2Slaves --query "Reservations[].Instances[].PublicIpAddress[]")
