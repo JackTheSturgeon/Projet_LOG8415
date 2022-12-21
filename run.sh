@@ -42,12 +42,14 @@ if [ "$SecurityGroup" == "" ]; then
     # enable inbound ssh to debug and vnc
     aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 22 --cidr 0.0.0.0/0
     aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 1186 --cidr 0.0.0.0/0
+    #aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
 
     # for downloads, enable http/https outbound
-    aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
-#aws ec2 authorize-security-group-egress  --group-id $SecurityGroup --protocol tcp --port 443 --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
+    #aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 1186 --cidr 0.0.0.0/0
+    # aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 443 --cidr 0.0.0.0/0
 fi
 
 # Launching MySQL instance
