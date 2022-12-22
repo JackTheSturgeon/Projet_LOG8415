@@ -1,0 +1,9 @@
+# File in /etc/mysql/my.cnf
+[mysqld]
+ndbcluster # running on NDB engine
+skip_ssl
+bind-address=0.0.0.0 # Open to external connection
+
+[mysql_cluster]
+# Ip of manager server
+ndb-connectstring=

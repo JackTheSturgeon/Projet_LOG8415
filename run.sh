@@ -15,6 +15,8 @@ VpcId=$(aws ec2 describe-vpcs --query 'Vpcs'[0].VpcId --output text) #default VP
 echo $VpcId
 Zone=$(aws ec2 describe-subnets --filters Name=availability-zone,Values=us-east-1* --query Subnets[0].AvailabilityZone --output text)
 echo $Zone
+SubnetId=$(aws ec2 describe-subnets --query 'Subnets'[0].SubnetId --output text) #default Subnet
+echo $SubnetId
 
 OldInstances=$(aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query "Reservations[].Instances[].[InstanceId]" --output text)
 echo $OldInstances
@@ -29,7 +31,7 @@ fi
 
 SecurityGroup=$(aws ec2 describe-security-groups --query "SecurityGroups[].GroupId" --filter "Name=group-name,Values=tp2-group" --output text)
 
-if [ "$SecurityGroup" == "" ]; then
+if [ "$SecurityGroup" != "" ]; then
     OldGroups=$(aws ec2 describe-security-groups --query "SecurityGroups[].GroupId" --output text)
     for group in $OldGroups
     do
@@ -43,14 +45,12 @@ if [ "$SecurityGroup" == "" ]; then
     aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 22 --cidr 0.0.0.0/0
     aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
     aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 1186 --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port 3306 --cidr 0.0.0.0/0
     #aws ec2 authorize-security-group-ingress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
 
     # for downloads, enable http/https outbound
     aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0
     #aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port (5900-5910) --cidr 0.0.0.0/0
     aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 1186 --cidr 0.0.0.0/0
-    aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 3306 --cidr 0.0.0.0/0
     # aws ec2 authorize-security-group-egress --group-id $SecurityGroup --protocol tcp --port 443 --cidr 0.0.0.0/0
 fi
 
@@ -58,10 +58,12 @@ fi
 t2Micro="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --user-data file://install_mysql.sh --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
 echo $t2Micro
 
-t2Master="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
+t2Master="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
 echo $t2Master
-t2Slaves="$(aws ec2 run-instances --image-id $ECSImageId --count 3 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
+t2Slaves="$(aws ec2 run-instances --image-id $ECSImageId --count 3 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
 echo $t2Slaves
 
 masterAddrList=$(aws ec2 describe-instances --instance-id $t2Master --query "Reservations[].Instances[].PublicIpAddress[]")
 slavesAddrList=$(aws ec2 describe-instances --instance-id $t2Slaves --query "Reservations[].Instances[].PublicIpAddress[]")
+masterPrvAddrList=$(aws ec2 describe-instances --instance-id $t2Master --query "Reservations[].Instances[].PrivateIpAddress[]")
+slavesPrvAddrList=$(aws ec2 describe-instances --instance-id $t2Slaves --query "Reservations[].Instances[].PrivateIpAddress[]")

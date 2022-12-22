@@ -20,3 +20,12 @@ tar -xvf sakila-db.tar.gz
 # sudo systemctl restart mysql
 # ALLOW all connections on port 3306
 # sudo ufw allow 3306
+
+sudo apt-get -y install sysbench
+
+# In mysql add new user for the tests
+# mysql> create user sbtest_user identified by 'password';
+# mysql> grant all on sbtest.* to `sbtest_user`@`%`;
+# mysql> show grants for sbtest_user;
+
+# sysbench --db-driver=mysql --mysql-user=sbtest_user --mysql_password=password --mysql-db=sakila --mysql-host=localhost --mysql-port=3306 --tables=16 --table-size=10000 /usr/share/sysbench/oltp_read_write.lua prepare
