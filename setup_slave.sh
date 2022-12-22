@@ -11,7 +11,7 @@ sudo dpkg -i mysql-cluster-community-data-node_8.0.30-1ubuntu22.04_amd64.deb
 
 # Create config file to add manager
 sudo mkdir /etc/mysql/
-sudo nano /etc/mysql/my.cnf
+# sudo nano /etc/mysql/my.cnf
 sudo mkdir -p /usr/local/mysql/data
-sudo ndbd
+# sudo ndbd
 # sudo ndb_mgmd -f /var/lib/mysql-cluster/config.ini

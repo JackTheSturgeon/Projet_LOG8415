@@ -12,19 +12,18 @@ sudo dpkg -i mysql-cluster-community-management-server_8.0.30-1ubuntu22.04_amd64
 # This file contains the IPs of the slaves and the manager
 sudo mkdir /var/lib/mysql-cluster
 sudo mkdir /etc/mysql/
-sudo nano /var/lib/mysql-cluster/config.ini
+# sudo nano /var/lib/mysql-cluster/config.ini
 
-
-sudo ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+# sudo ndb_mgmd -f /var/lib/mysql-cluster/config.ini
 
 # Setup ndb as a service
-sudo pkill -f ndb_mgmd
-sudo nano /etc/systemd/system/ndb_mgmd.service
+# sudo pkill -f ndb_mgmd
+# sudo nano /etc/systemd/system/ndb_mgmd.service
 
-sudo systemctl daemon-reload
-sudo systemctl enable ndb_mgmd
-sudo systemctl start ndb_mgmd
-sudo systemctl status ndb_mgmd
+# sudo systemctl daemon-reload
+# sudo systemctl enable ndb_mgmd
+# sudo systemctl start ndb_mgmd
+# sudo systemctl status ndb_mgmd
 
 # See the ports that are being listened to
 #  sudo lsof -i -P -n | grep LISTEN 
