@@ -38,7 +38,6 @@ cd install
 sudo wget https://dev.mysql.com/get/Downloads/MySQL-Cluster-8.0/mysql-cluster_8.0.31-1ubuntu22.04_amd64.deb-bundle.tar
 sudo tar -xvf mysql-cluster_8.0.31-1ubuntu22.04_amd64.deb-bundle.tar
 
-
 """
 sudo apt update
 sudo dpkg -i mysql-common_8.0.31-1ubuntu22.04_amd64.deb

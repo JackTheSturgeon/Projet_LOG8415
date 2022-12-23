@@ -11,9 +11,13 @@ sudo dpkg -i mysql-cluster-community-data-node_8.0.30-1ubuntu22.04_amd64.deb
 
 # Create config file to add manager
 sudo mkdir /etc/mysql/
-# sudo nano /etc/mysql/my.cnf
+"""
+# Configuration file, we have to specify server addr
+sudo nano /etc/mysql/my.cnf
+"""
 sudo mkdir -p /usr/local/mysql/data
 """
+# SETUP ndbd as a service
 sudo ndbd
 sudo pkill -f ndbd
 sudo nano /etc/systemd/system/ndbd.service
