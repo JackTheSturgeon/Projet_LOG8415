@@ -58,12 +58,17 @@ fi
 t2Micro="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --user-data file://install_mysql.sh --placement AvailabilityZone=$Zone --query "Instances[].[InstanceId]" --output text)"
 echo $t2Micro
 
-t2Master="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
+t2Master="$(aws ec2 run-instances --image-id $ECSImageId --count 1 --instance-type t2.small --security-group-ids $SecurityGroup --key-name vockey --user-data file://setup_master.sh --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
 echo $t2Master
-t2Slaves="$(aws ec2 run-instances --image-id $ECSImageId --count 3 --instance-type t2.micro --security-group-ids $SecurityGroup --key-name vockey --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
+t2Slaves="$(aws ec2 run-instances --image-id $ECSImageId --count 3 --instance-type t2.small --security-group-ids $SecurityGroup --key-name vockey --user-data file://setup_slave.sh --placement AvailabilityZone=$Zone --subnet-id=$SubnetId --query "Instances[].[InstanceId]" --output text)"
 echo $t2Slaves
 
 masterAddrList=$(aws ec2 describe-instances --instance-id $t2Master --query "Reservations[].Instances[].PublicIpAddress[]")
 slavesAddrList=$(aws ec2 describe-instances --instance-id $t2Slaves --query "Reservations[].Instances[].PublicIpAddress[]")
 masterPrvAddrList=$(aws ec2 describe-instances --instance-id $t2Master --query "Reservations[].Instances[].PrivateIpAddress[]")
 slavesPrvAddrList=$(aws ec2 describe-instances --instance-id $t2Slaves --query "Reservations[].Instances[].PrivateIpAddress[]")
+
+echo $masterAddrList
+echo $masterPrvAddrList
+echo $slavesAddrList
+echo $slavesPrvAddrList

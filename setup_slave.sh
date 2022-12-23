@@ -13,5 +13,12 @@ sudo dpkg -i mysql-cluster-community-data-node_8.0.30-1ubuntu22.04_amd64.deb
 sudo mkdir /etc/mysql/
 # sudo nano /etc/mysql/my.cnf
 sudo mkdir -p /usr/local/mysql/data
-# sudo ndbd
-# sudo ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+"""
+sudo ndbd
+sudo pkill -f ndbd
+sudo nano /etc/systemd/system/ndbd.service
+sudo systemctl daemon-reload
+sudo systemctl enable ndbd
+sudo systemctl start ndbd
+sudo systemctl status ndbd
+"""
