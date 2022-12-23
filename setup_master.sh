@@ -3,6 +3,8 @@
 sudo apt update
 # Will use ifconfig to get the addr of manager
 sudo apt install net-tools
+
+# Installing dependencies for community management server
 cd ~
 sudo wget https://downloads.mysql.com/archives/get/p/14/file/mysql-cluster_8.0.30-1ubuntu22.04_amd64.deb-bundle.tar
 sudo tar -xvf mysql-cluster_8.0.30-1ubuntu22.04_amd64.deb-bundle.tar
@@ -12,6 +14,7 @@ sudo dpkg -i mysql-cluster-community-management-server_8.0.30-1ubuntu22.04_amd64
 # This file contains the IPs of the slaves and the manager
 sudo mkdir /var/lib/mysql-cluster
 sudo mkdir /etc/mysql/
+# Commands to launch server as a service
 """
 sudo nano /etc/mysql/my.cnf
 sudo nano /var/lib/mysql-cluster/config.ini
@@ -27,7 +30,7 @@ sudo systemctl enable ndb_mgmd
 sudo systemctl start ndb_mgmd
 sudo systemctl status ndb_mgmd
 
-See the ports that are being listened to
+# See the ports that are being listened to
 sudo lsof -i -P -n | grep LISTEN 
 """
 
@@ -55,6 +58,7 @@ sudo dpkg -i mysql-cluster-community-server-core_8.0.31-1ubuntu22.04_amd64.deb
 sudo dpkg -i mysql-cluster-community-server_8.0.31-1ubuntu22.04_amd64.deb
 sudo dpkg -i mysql-server_8.0.31-1ubuntu22.04_amd64.deb
 
+# Rajouter la configuration précédente de my.cnf à la nouvelle générée par les installations au dessus
 sudo nano /etc/mysql/my.cnf
 sudo systemctl enable mysql
 

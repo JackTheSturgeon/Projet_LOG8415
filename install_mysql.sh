@@ -22,7 +22,7 @@ SOURCE /home/ubuntu/sakila-db/sakila-data.sql;
 """
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
 sudo systemctl restart mysql
-ALLOW all connections on port 3306
+# ALLOW all connections on port 3306
 sudo ufw allow 3306
 """
 sudo apt-get -y install sysbench
